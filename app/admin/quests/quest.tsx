@@ -119,10 +119,11 @@ export function QuestsTab({ quests, onRefresh }: QuestsTabProps) {
 
   const handleAddQuest = async () => {
     try {
-      const res = await fetch("/api/admin/quest/create", {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_AWS_CREATE_TASK_API_GATEWAY_URL}/api/admin/quest/create`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newQuest),
+        credentials: "include",
       });
 
       const data = await res.json();
@@ -141,7 +142,7 @@ export function QuestsTab({ quests, onRefresh }: QuestsTabProps) {
         console.error("Error creating quest:", data.error);
       }
     } catch (err) {
-      console.error("Failed to create quest:", err);
+        console.error("Failed to create quest:", err);
     }
   };
 
@@ -149,8 +150,9 @@ export function QuestsTab({ quests, onRefresh }: QuestsTabProps) {
     if (!editingQuest) return;
 
     try {
-      const response = await fetch(`/api/admin/quest/edit/${editingQuest.id}`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_AWS_UPDATE_TASK_API_GATEWAY_URL}/api/admin/quest/edit/${editingQuest.id}`, {
         method: "POST",
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },
@@ -172,8 +174,12 @@ export function QuestsTab({ quests, onRefresh }: QuestsTabProps) {
 
   const handleDeleteQuest = async () => {
     try {
-      const res = await fetch(`/api/admin/quest/delete/${deleteQuestId}`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_AWS_DELETE_TASK_API_GATEWAY_URL}/api/admin/quest/delete/${deleteQuestId}`, {
         method: "DELETE",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
       });
 
       if (!res.ok) throw new Error("Failed to delete quest");

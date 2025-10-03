@@ -64,6 +64,30 @@ export default function UserDashboard() {
     new Set(),
   );
 
+    const { user: sessionUser } = useAuth();
+  
+    const handleSubscribe = async () => {
+      try {
+        const res = await fetch("/api/subscribe", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: sessionUser?.email }),
+        });
+  
+        if (!res.ok) throw new Error("Failed to subscribe");
+  
+        const data = await res.json();
+        if (data.status === "subscribed") {
+          toast.success("You are already subscribed");
+        } else if (data.status === "pending") {
+          toast.success("Check your email to confirm the subscription");
+        }
+      } catch (err) {
+        console.error(err);
+        toast.error("Subscription failed, Please try again later.");
+      }
+    };
+
   // Fetch daily quests
   useEffect(() => {
     const fetchDailyQuests = async () => {
@@ -298,6 +322,16 @@ export default function UserDashboard() {
           <div className="p-4 flex-1 flex flex-col min-h-0">
             <h3 className="font-bold text-gray-800 mb-4 text-lg flex-shrink-0">
               Daily Quests
+
+              <span className="text-xs ml-5 font-light text-black">
+                <button
+                  className="text-xs font-light mr-1 text-blue-600 hover:underline cursor-pointer"
+                  onClick={handleSubscribe}
+                >
+                  Subscribe
+                </button>
+                  now for quest notifications !
+              </span>
             </h3>
 
             {questsLoading ? (
